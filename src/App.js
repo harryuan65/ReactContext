@@ -1,41 +1,30 @@
-import { useState } from 'react';
+import { createContext } from 'react';
 import './App.css';
+import ToDos from './components/ToDos';
+import useToDos from './hooks/useToDos';
 
-function ToDo(props) {
-  return <div>
-    <label for={props.name}>{props.name}</label>:<input name={props.name} defaultValue={props.value || ''} onChange={props.onToDoChange}/>
-  </div>
-}
-
-function ToDos(props) {
-  const todos = props.todos;
-  return todos.map(e=><ToDo name={e.name} value={e.value} onToDoChange={props.onToDoChange}/>)
-}
+const handlersContext = createContext();
 
 function App() {
-  const [todos, setToDos] = useState([{name: 'name', value: ''}, { name: 'email', value: ''}]);
-  const handleToDoChange = (event) => {
-    const { name, value } = event.target;
-    setToDos(
-      todos.map(e=>{
-        if(e.name !== name) return e;
-        else {
-          return {
-            ...e,
-            value
-          }
-        }
-      })
-    )
-  }
+  const {
+    todos,
+    handleToDoChange
+  } = useToDos();
+
+
   return (
     <div className="App">
       <pre>
         {JSON.stringify(todos, null, 2)}
       </pre>
-      <ToDos todos={todos} onToDoChange={handleToDoChange} />
+      {/* <ToDos todos={todos} onToDoChange={handleToDoChange} /> */}
+
+      <handlersContext.Provider value={{handleToDoChange}}>
+        <ToDos todos={todos} />
+      </handlersContext.Provider>
     </div>
   );
 }
 
 export default App;
+export { handlersContext };
